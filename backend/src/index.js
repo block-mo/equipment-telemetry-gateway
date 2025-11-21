@@ -2,6 +2,7 @@
 import 'dotenv/config'
 
 // ES module imports (instead of require)
+import process from 'process'
 import express from 'express'
 import cors from 'cors'
 import http from 'http'
