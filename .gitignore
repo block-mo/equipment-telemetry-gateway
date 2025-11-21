@@ -12,3 +12,19 @@ node_modules
 
 # Ignore code coverage output from test tools
 **/coverage
+
+# Ignore log files
+*.log
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+# gitignore
+.gitignore
