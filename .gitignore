@@ -1,0 +1,14 @@
+# Ignore installed dependencies (always regenerated)
+node_modules
+
+# Environment variables containing secrets
+.env
+
+# Ignore all compiled build output folders
+**/dist
+
+# Ignore Python virtual environments anywhere in repo
+**/.venv
+
+# Ignore code coverage output from test tools
+**/coverage
