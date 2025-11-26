@@ -124,7 +124,7 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist/
-          retention-days: 1
+          retention-days: 5
 
   # ******************************************* #
   # Job 3: Simulator Service Tests
