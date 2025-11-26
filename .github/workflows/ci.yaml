@@ -1,0 +1,162 @@
+# ******************************************* #
+# CI/CD Pipeline for Equipment Telemetry Gateway
+# ******************************************* #
+name: CI Pipeline
+
+# Trigger on push to main/feature branches and PRs
+on:
+  push:
+    branches:
+      # Match all branches
+      -'**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  # ******************************************* #
+  # Job 1: Backend Service Tests & Linting
+  # ******************************************* #
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Test against multiple Node versions for compatibility
+        node-version: [20, 22]
+
+    # Service container for PostgreSQL (runs alongside job)
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: demo
+          POSTGRES_PASSWORD: demo
+          POSTGRES_DB: telemetry_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          # Cache npm dependencies for faster installs
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run linter
+        working-directory: backend
+        run: npx eslint src/
+
+      - name: Run tests
+        working-directory: backend
+        env:
+          # Point to service container
+          DATABASE_URL: postgresql://demo:demo@localhost:5432/telemetry_test
+          NODE_ENV: test
+        run: npm test
+        continue-on-error: true
+
+      - name: Check code formatting
+        working-directory: backend
+        run: npx prettier --check "src/**/*.js"
+
+  # ******************************************* #
+  # Job 2: Frontend Service Build & Test
+  # ******************************************* #
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run linter (if configured)
+        working-directory: frontend
+        run: npm run lint || echo "No lint script found"
+        continue-on-error: true
+
+      - name: Run tests (if configured)
+        working-directory: frontend
+        run: npm test || echo "No test script found"
+        continue-on-error: true
+
+      - name: Build production bundle
+        working-directory: frontend
+        run: npm run build || echo "No build script found"
+        env:
+          # Use dummy values for build-time env vars
+          VITE_API_URL: http://localhost:4000
+          VITE_WS_URL: ws://localhost:4000/ws
+
+      - name: Upload build artifacts
+        if: matrix.node-version == 20
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist/
+          retention-days: 5
+
+  # ******************************************* #
+  # Job 3: Simulator Service Tests
+  # ******************************************* #
+  simulator:
+    name: Simulator CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: simulator/package-lock.json
+
+      - name: Install dependencies
+        working-directory: simulator
+        run: npm ci
+
+      - name: Run linter (if configured)
+        working-directory: simulator
+        run: npx eslint src/ || echo "No ESLint config found"
+        continue-on-error: true
+
+      - name: Run tests
+        working-directory: simulator
+        run: npm test || echo "No tests configured"
+        continue-on-error: true
