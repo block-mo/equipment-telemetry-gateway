@@ -56,8 +56,11 @@ USER appuser
 EXPOSE 4000
 
 # Health check for Kubernetes, Docker Swarm, Docker Compose
-HEALTHCHECK --interval=20s --timeout=3s --start-period=10s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:4000/devices', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
+# Keep only in compose.yaml where you can tune per environment needs, industry standards
+# Checks if the /devices endpoint is reachable and returns HTTP 200 OK
+# Uncomment the following lines to enable health checks for dev environment
+# HEALTHCHECK --interval=20s --timeout=3s --start-period=10s --retries=3 \
+    # CMD node -e "require('http').get('http://localhost:4000/devices', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
 
 # Start service using npm start
 CMD ["npm", "start"]
