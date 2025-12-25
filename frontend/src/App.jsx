@@ -25,7 +25,7 @@ export default function App() {
 
         // Add device if not already listed
         setDevices((prev) =>
-          prev.includes(deviceId) ? prev : [...prev, deviceId]
+          prev.includes(deviceId) ? prev : [...prev, deviceId],
         );
 
         // Update telemetry and keep only last 50 entries
