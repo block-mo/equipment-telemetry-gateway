@@ -3,7 +3,7 @@
 > Real-time IoT telemetry monitoring system for industrial equipment
 
 [![CI Pipeline](https://img.shields.io/badge/CI-passing-brightgreen)]()
-[![License](https://img.shields.io/badge/license-ISC-blue)]()
+[![License](https://img.shields.io/badge/license-Apache-blue)]()
 [![Node Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen)]()
 
 ## 📋 Overview
