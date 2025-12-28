@@ -69,7 +69,8 @@ jobs:
           DATABASE_URL: postgresql://demo:demo@localhost:5432/telemetry_test
           NODE_ENV: test
         run: npm test
-        continue-on-error: true
+        # Fail the build if tests fail (strict mode)
+        continue-on-error: false
 
       - name: Check code formatting
         working-directory: backend
