@@ -2,10 +2,11 @@
   "name": "simulator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "simulator.js",
   "type": "module",
   "scripts": {
     "format": "prettier --write .",
+    "start": "node src/simulator.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
