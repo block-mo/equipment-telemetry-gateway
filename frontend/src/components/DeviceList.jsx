@@ -31,3 +31,34 @@ export default function DeviceList({ devices, selected, onSelect }) {
     </div>
   );
 }
+
+// DeviceControls component to send start/stop commands to selected device
+export function DeviceControls({ deviceId }) {
+  // Async function to send command action to backend API
+  const send = async (action) => {
+    await fetch(`http://localhost:4000/devices/${deviceId}/command`, {
+      method: "POST", // POST request to send command
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action }), // Send action (start/stop) as JSON
+    });
+  };
+
+  return (
+    <div className="mt-2 flex gap-2">
+      {/* Start button - sends "start" command */}
+      <button
+        className="px-3 py-1 bg-green-600 text-white rounded"
+        onClick={() => send("start")}
+      >
+        Start
+      </button>
+      {/* Stop button - sends "stop" command */}
+      <button
+        className="px-3 py-1 bg-red-600 text-white rounded"
+        onClick={() => send("stop")}
+      >
+        Stop
+      </button>
+    </div>
+  );
+}

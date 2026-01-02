@@ -36,6 +36,15 @@ export async function initDb() {
     );
   `);
 
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS commands (
+      id SERIAL PRIMARY KEY,
+      device_id TEXT NOT NULL,
+      action TEXT NOT NULL,
+      ts TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
   client.release(); // return client to pool
 }
 
@@ -85,6 +94,34 @@ app.get("/devices", async (_req, res) => {
 
   // Format output as [{ id: 'device-01' }]
   res.json(r.rows.map((row) => ({ id: row.device_id })));
+});
+
+// POST /devices/:id/command — send command to device + audit log
+app.post("/devices/:id/command", async (req, res) => {
+  const { action } = req.body;
+  const deviceId = req.params.id;
+
+  if (!action) {
+    return res.status(400).json({ error: "action required" });
+  }
+
+  // Insert command into audit log
+  await pool.query("INSERT INTO commands (device_id, action) VALUES ($1, $2)", [
+    deviceId,
+    action,
+  ]);
+
+  // Notify simulator via WebSocket broadcast
+  const msg = JSON.stringify({
+    type: "command",
+    payload: { deviceId, action },
+  });
+
+  wss.clients.forEach((c) => {
+    if (c.readyState === WebSocket.OPEN) c.send(msg);
+  });
+
+  res.status(202).json({ accepted: true });
 });
 
 // Start server after DB is initialized
