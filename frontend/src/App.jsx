@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import DeviceList from "./components/DeviceList";
+import DeviceList, { DeviceControls } from "./components/DeviceList";
 import TelemetryChart from "./components/TelemetryChart";
 
 export default function App() {
@@ -56,7 +56,13 @@ export default function App() {
 
       {/* Only show chart when a device is selected */}
       {selected && (
-        <TelemetryChart deviceId={selected} data={telemetry[selected] || []} />
+        <>
+          <TelemetryChart
+            deviceId={selected}
+            data={telemetry[selected] || []}
+          />
+          <DeviceControls deviceId={selected} />
+        </>
       )}
     </div>
   );
