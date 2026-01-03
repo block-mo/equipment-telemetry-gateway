@@ -260,7 +260,7 @@ See [`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) for details.
 
 ## 📝 License
 
-Apache
+Apache 2.0
 
 ## 🆘 Troubleshooting
 
