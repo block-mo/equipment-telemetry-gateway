@@ -1,6 +1,6 @@
 # Equipment Telemetry Gateway
 
-> Real-time IoT telemetry monitoring system for industrial equipment
+Real-time IoT telemetry monitoring system for industrial equipment
 
 [![CI Pipeline](https://img.shields.io/badge/CI-passing-brightgreen)]()
 [![License](https://img.shields.io/badge/license-Apache-blue)]()
