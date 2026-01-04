@@ -284,4 +284,4 @@ Apache 2.0
 
 ---
 
-**Built for industrial IoT monitoring**
+**Built for industrial IoT monitoring** 🏭
